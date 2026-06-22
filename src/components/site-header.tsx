@@ -1,10 +1,10 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { BookOpen, LogOut, Library as LibraryIcon, Search, Moon, Sun, User, Shield, Menu } from "lucide-react";
+import { BookOpen, LogOut, Library as LibraryIcon, Search, Moon, Sun, User, Shield, Menu, PenLine } from "lucide-react";
 import { isAdmin } from "@/lib/admin";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth-hook";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import {
   DropdownMenu,
@@ -18,6 +18,18 @@ export function SiteHeader() {
   const { user } = useSession();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { data: profileAvatar } = useQuery({
+    queryKey: ["profile-avatar", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", user!.id)
+        .maybeSingle();
+      return data?.avatar_url ?? null;
+    },
+  });
   const isReader = useRouterState({ select: (s) => s.location.pathname.startsWith("/read/") });
   const [isDark, setIsDark] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -84,13 +96,23 @@ export function SiteHeader() {
             Browse
           </Link>
           {user && (
-            <Link 
-              to="/library" 
-              className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition rounded-lg hover:bg-white/5"
-              activeProps={{ className: "text-foreground bg-white/5" }}
-            >
-              My Library
-            </Link>
+            <>
+              <Link 
+                to="/library" 
+                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition rounded-lg hover:bg-white/5"
+                activeProps={{ className: "text-foreground bg-white/5" }}
+              >
+                My Library
+              </Link>
+              <Link 
+                to="/submit-book" 
+                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition rounded-lg hover:bg-white/5"
+                activeProps={{ className: "text-foreground bg-white/5" }}
+              >
+                <PenLine className="h-4 w-4 inline mr-1.5" />
+                Submit Book
+              </Link>
+            </>
           )}
         </nav>
 
@@ -126,8 +148,12 @@ export function SiteHeader() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full ml-1">
-                    <div className="h-7 w-7 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-glow transition-transform hover:scale-105">
-                      <User className="h-3.5 w-3.5 text-primary-foreground" />
+                    <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden shadow-glow transition-transform hover:scale-105">
+                      {profileAvatar ? (
+                        <img src={profileAvatar} alt="Avatar" className="h-full w-full object-cover rounded-full" />
+                      ) : (
+                        <User className="h-5 w-5 text-primary-foreground" />
+                      )}
                     </div>
                   </Button>
                 </DropdownMenuTrigger>

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { BookOpen } from "lucide-react";
-import { ensureUserProfile } from "@/lib/profile";
+import { ensureProfileExistsOnce } from "@/lib/profile";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — Lumen" }] }),
@@ -34,7 +34,7 @@ function AuthPage() {
     setBusy(false);
     if (error) return toast.error(error.message);
     if (data.user) {
-      await ensureUserProfile(data.user).catch(() => undefined);
+      await ensureProfileExistsOnce(data.user);
     }
     toast.success("Welcome back");
     navigate({ to: "/" });
@@ -51,7 +51,7 @@ function AuthPage() {
     setBusy(false);
     if (error) return toast.error(error.message);
     if (data.user) {
-      await ensureUserProfile(data.user).catch(() => undefined);
+      await ensureProfileExistsOnce(data.user);
     }
     toast.success("Account created");
     navigate({ to: "/" });

@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, Bookmark, Heart, Users, Star } from "lucide-react";
+import { BookOpen, Bookmark, Heart, Users, Star, FileText } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { getAdminDashboardStats, getAdminFavoritedBooks, getAdminProgressOverview } from "@/lib/api/admin.functions";
+import { getAdminDashboardStats, getAdminFavoritedBooks } from "@/lib/api/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin Dashboard — Lumen" }] }),
@@ -56,11 +56,6 @@ function AdminDashboard() {
     queryFn: () => getAdminFavoritedBooks(),
   });
 
-  const { data: progressOverview, isError: progressError, isLoading: progressLoading } = useQuery({
-    queryKey: ["admin-progress-overview"],
-    queryFn: () => getAdminProgressOverview(),
-  });
-
   const maxFavCount = topFavoritedBooks.length > 0 ? topFavoritedBooks[0].count : 0;
 
   return (
@@ -75,7 +70,6 @@ function AdminDashboard() {
         <StatCard icon={<Users className="h-5 w-5" />} label="Users" value={getStatValue(stats?.users, statsLoading, statsError)} />
         <StatCard icon={<Heart className="h-5 w-5" />} label="Favorites" value={getStatValue(stats?.favorites, statsLoading, statsError)} />
         <StatCard icon={<Bookmark className="h-5 w-5" />} label="Bookmarks" value={getStatValue(stats?.bookmarks, statsLoading, statsError)} />
-        <StatCard icon={<BookOpen className="h-5 w-5" />} label="In Progress" value={getStatValue(stats?.progress, statsLoading, statsError)} />
       </div>
 
       {topFavoritedBooks.length > 0 && (
@@ -119,57 +113,6 @@ function AdminDashboard() {
         </Card>
       )}
 
-      <Card className="p-6 bg-card/60 backdrop-blur border-border/60">
-        <div className="flex items-center justify-between gap-4 mb-5">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">Reading Progress</h3>
-          </div>
-          <Link to="/admin/users">
-            <Button variant="outline" size="sm">
-              Users
-            </Button>
-          </Link>
-        </div>
-
-        {progressLoading ? (
-          <p className="text-sm text-muted-foreground">Loading progress...</p>
-        ) : progressError ? (
-          <p className="text-sm text-destructive">Could not load reading progress.</p>
-        ) : (
-          <div className="grid gap-5 lg:grid-cols-[260px_1fr]">
-            <div className="grid grid-cols-3 lg:grid-cols-1 gap-3">
-              <ProgressMetric label="Records" value={progressOverview?.total ?? 0} />
-              <ProgressMetric label="Readers" value={progressOverview?.readers ?? 0} />
-              <ProgressMetric label="Books" value={progressOverview?.books ?? 0} />
-            </div>
-
-            {(progressOverview?.recent.length ?? 0) === 0 ? (
-              <p className="text-sm text-muted-foreground">No active reading progress yet.</p>
-            ) : (
-              <div className="grid gap-3 md:grid-cols-2">
-                {progressOverview?.recent.map((entry) => (
-                  <div key={`${entry.bookId}-${entry.updatedAt}`} className="flex items-center gap-3 rounded-md border border-border/50 p-3">
-                    {entry.coverUrl ? (
-                      <img src={entry.coverUrl} alt={entry.title} className="h-14 w-10 rounded object-cover ring-1 ring-white/10 shrink-0" />
-                    ) : (
-                      <div className="h-14 w-10 rounded bg-secondary shrink-0 flex items-center justify-center">
-                        <BookOpen className="h-4 w-4 text-muted-foreground/40" />
-                      </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">{entry.title}</p>
-                      <p className="text-xs text-muted-foreground truncate">{entry.author}</p>
-                      <p className="text-xs text-primary mt-1">Page {entry.lastPage}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </Card>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6 bg-card/60 backdrop-blur border-border/60">
           <div className="flex items-center justify-between mb-4">
@@ -184,7 +127,7 @@ function AdminDashboard() {
             <p className="text-sm text-muted-foreground">No books yet.</p>
           ) : (
             <ul className="space-y-3">
-              {recentBooks.map((book) => (
+              {recentBooks.map((book: { id: string; title: string; author: string; language: string }) => (
                 <li key={book.id} className="flex items-center justify-between gap-4 text-sm">
                   <div className="min-w-0">
                     <p className="font-medium truncate">{book.title}</p>
@@ -226,7 +169,7 @@ function AdminDashboard() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Link to="/admin/books">
           <Card className="p-6 bg-card/60 backdrop-blur border-border/60 hover:bg-card/80 transition cursor-pointer h-full">
             <BookOpen className="h-6 w-6 text-primary mb-3" />
@@ -241,16 +184,14 @@ function AdminDashboard() {
             <p className="text-sm text-muted-foreground">View user profiles, activity, and accounts.</p>
           </Card>
         </Link>
+        <Link to="/admin/submissions">
+          <Card className="p-6 bg-card/60 backdrop-blur border-border/60 hover:bg-card/80 transition cursor-pointer h-full">
+            <FileText className="h-6 w-6 text-green-500 mb-3" />
+            <h3 className="font-semibold mb-1">Submissions</h3>
+            <p className="text-sm text-muted-foreground">Review and approve user book submissions.</p>
+          </Card>
+        </Link>
       </div>
-    </div>
-  );
-}
-
-function ProgressMetric({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-md bg-secondary/30 p-3">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="text-xl font-bold mt-1">{value}</p>
     </div>
   );
 }

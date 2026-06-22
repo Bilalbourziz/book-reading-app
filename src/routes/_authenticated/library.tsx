@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/auth-hook";
-import { BookOpen, Grid3x3, List, ArrowUpDown } from "lucide-react";
+import { BookOpen, Grid3x3, List, ArrowUpDown, BookMarked, Trash2, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useMemo } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/library")({
   head: () => ({ meta: [{ title: "My Library — Lumen" }] }),
@@ -17,8 +18,10 @@ type ViewMode = "grid" | "list";
 
 function Library() {
   const { user } = useSession();
+  const qc = useQueryClient();
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  
   const { data: favorites = [], isLoading } = useQuery({
     queryKey: ["library", user?.id],
     enabled: !!user,
@@ -48,6 +51,68 @@ function Library() {
     },
   });
 
+  // Fetch user's submitted books (approved)
+  const { data: myBooks = [] } = useQuery({
+    queryKey: ["my-books", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("book_submissions")
+        .select("id,title,author,cover_url,year,status")
+        .eq("user_id", user!.id)
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  // Fetch user's bookmarks to show which books are bookmarked
+  const { data: bookmarks = [] } = useQuery({
+    queryKey: ["bookmarks", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bookmarks")
+        .select("book_id")
+        .eq("user_id", user!.id);
+      if (error) throw error;
+      return (data ?? []).map((b: any) => b.book_id);
+    },
+  });
+
+  // Bookmark (Read Later) mutation
+  const bookmarkMutation = useMutation({
+    mutationFn: async (bookId: string) => {
+      const { error } = await supabase.from("bookmarks").insert({
+        book_id: bookId,
+        user_id: user!.id,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["library", user?.id] });
+      toast.success("Added to Read Later");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const removeBookmarkMutation = useMutation({
+    mutationFn: async (bookId: string) => {
+      const { error } = await supabase
+        .from("bookmarks")
+        .delete()
+        .eq("book_id", bookId)
+        .eq("user_id", user!.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["library", user?.id] });
+      toast.success("Removed from Read Later");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const sortedFavorites = useMemo(() => {
     const sorted = [...favorites];
     switch (sortBy) {
@@ -62,6 +127,14 @@ function Library() {
         return sorted;
     }
   }, [favorites, sortBy]);
+
+  const handleBookmarkToggle = (bookId: string, isBookmarked: boolean) => {
+    if (isBookmarked) {
+      removeBookmarkMutation.mutate(bookId);
+    } else {
+      bookmarkMutation.mutate(bookId);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
@@ -144,6 +217,49 @@ function Library() {
                 </div>
               </Link>
             ))}
+          </div>
+        </section>
+      )}
+
+      {myBooks.length > 0 && (
+        <section className="mb-14">
+          <div className="flex items-center gap-2 mb-5">
+            <BookMarked className="h-5 w-5 text-accent" />
+            <h2 className="text-xl font-semibold tracking-tight">My Books</h2>
+            <span className="text-xs text-muted-foreground ml-auto">{myBooks.length} book{myBooks.length !== 1 ? "s" : ""} submitted</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
+            {myBooks.map((book: any) => {
+              const isBookmarked = bookmarks.includes(book.id);
+              return (
+                <div key={book.id} className="group relative">
+                  <Link to="/book/$id" params={{ id: book.id }} className="block">
+                    <div className="aspect-[2/3] rounded-md overflow-hidden bg-secondary ring-1 ring-border/60 group-hover:ring-primary/60 transition shadow-cinematic relative">
+                      {book.cover_url && <img src={book.cover_url} alt={book.title} className="w-full h-full object-cover" />}
+                      {!book.cover_url && (
+                        <div className="w-full h-full grid place-items-center text-muted-foreground p-4">
+                          <BookOpen className="h-8 w-8 mb-2 opacity-40 mx-auto" />
+                          <p className="text-xs text-center">{book.title}</p>
+                        </div>
+                      )}
+                      {/* Bookmark button */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleBookmarkToggle(book.id, isBookmarked);
+                        }}
+                        className="absolute top-2 right-2 z-10 p-2 rounded-full bg-black/60 backdrop-blur-md text-white hover:bg-black/80 transition-opacity opacity-0 group-hover:opacity-100"
+                      >
+                        <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-accent text-accent" : ""}`} />
+                      </button>
+                    </div>
+                    <p className="text-sm font-medium mt-2 line-clamp-2 group-hover:text-primary transition-colors">{book.title}</p>
+                    <p className="text-xs text-muted-foreground">{book.author}</p>
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
