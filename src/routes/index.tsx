@@ -135,26 +135,26 @@ function Index() {
             )}
             <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
           </div>
-          <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-32 grid md:grid-cols-[1fr_260px] gap-10 items-center">
-            <div className="animate-fade-in" key={featured.id + "-text"}>
+          <div className="relative max-w-7xl mx-auto px-6 py-4 md:py-32 grid md:grid-cols-[1fr_260px] gap-10 items-center">
+            <div className="animate-fade-in text-center md:text-left" key={featured.id + "-text"}>
               <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent mb-4">
                 <Sparkles className="h-3.5 w-3.5" /> Featured tonight
               </div>
               <h1
-                className="text-5xl md:text-7xl font-bold leading-[1.05] mb-5 tracking-tight"
+                className="text-3xl md:text-7xl font-bold leading-[1.05] mb-4 tracking-tight"
                 style={{ fontFamily: "Playfair Display, serif" }}
               >
                 {featured.title}
               </h1>
-              <p className="text-muted-foreground text-lg mb-2">
+              <p className="text-muted-foreground text-base mb-2">
                 by {featured.author}
                 {featured.year && <span className="mx-2 text-muted-foreground/50">·</span>}
                 {featured.year}
               </p>
-              <p className="text-foreground/70 leading-relaxed mb-6 line-clamp-3 max-w-prose">
+              <p className="text-foreground/70 leading-relaxed mb-4 line-clamp-2 max-w-prose mx-auto md:mx-0">
                 {featured.description}
               </p>
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
                 {books.length > 1 && books.slice(0, 10).map((_, idx) => (
                   <button
                     key={idx}
@@ -168,7 +168,7 @@ function Index() {
                   />
                 ))}
               </div>
-              <div className="flex gap-3">
+              <div className="flex items-center justify-center md:justify-start gap-3">
                 <Link to="/read/$id" params={{ id: featured.id }}>
                   <Button size="lg" className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground border-0 shadow-glow group">
                     <BookOpen className="h-4 w-4 mr-2" /> Start reading
@@ -202,7 +202,7 @@ function Index() {
         </section>
       )}
 
-      <section className={`max-w-7xl mx-auto px-6 ${featured && !hasFilters ? "pt-10" : "pt-20"} space-y-6`}>
+      <section className={`max-w-7xl mx-auto px-6 ${featured && !hasFilters ? "pt-4 md:pt-10" : "pt-20"} space-y-6`}>
         <div className="flex items-center gap-3">
           <div className="relative flex-1 max-w-xl">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

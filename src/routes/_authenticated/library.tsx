@@ -138,12 +138,12 @@ function Library() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div>
+      <div className="mb-8">
+        <div className="text-center md:text-left mb-4">
           <h1 className="text-4xl font-bold mb-2" style={{ fontFamily: "Playfair Display, serif" }}>My Library</h1>
           <p className="text-muted-foreground">Your saved books and recent reads.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center md:justify-end gap-2">
           <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
             <SelectTrigger className="w-[140px] bg-background/50">
               <ArrowUpDown className="h-4 w-4 mr-2" />
@@ -179,10 +179,12 @@ function Library() {
 
       {progress.length > 0 && (
         <section className="mb-14">
-          <div className="flex items-center gap-2 mb-5">
-            <BookOpen className="h-5 w-5 text-primary" />
-            <h2 className="text-xl font-semibold tracking-tight">Continue reading</h2>
-            <span className="text-xs text-muted-foreground ml-auto">{progress.length} book{progress.length !== 1 ? "s" : ""} in progress</span>
+          <div className="flex flex-col md:flex-row md:items-center gap-2 mb-5">
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-primary" />
+              <h2 className="text-xl font-semibold tracking-tight">Continue reading</h2>
+            </div>
+            <span className="text-xs text-muted-foreground md:ml-auto">{progress.length} book{progress.length !== 1 ? "s" : ""} in progress</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-5">
             {progress.map((p: any) => p.book && (
@@ -223,10 +225,12 @@ function Library() {
 
       {myBooks.length > 0 && (
         <section className="mb-14">
-          <div className="flex items-center gap-2 mb-5">
-            <BookMarked className="h-5 w-5 text-accent" />
-            <h2 className="text-xl font-semibold tracking-tight">My Books</h2>
-            <span className="text-xs text-muted-foreground ml-auto">{myBooks.length} book{myBooks.length !== 1 ? "s" : ""} submitted</span>
+          <div className="flex flex-col md:flex-row md:items-center gap-2 mb-5">
+            <div className="flex items-center gap-2">
+              <BookMarked className="h-5 w-5 text-accent" />
+              <h2 className="text-xl font-semibold tracking-tight">My Books</h2>
+            </div>
+            <span className="text-xs text-muted-foreground md:ml-auto">{myBooks.length} book{myBooks.length !== 1 ? "s" : ""} submitted</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
             {myBooks.map((book: any) => {
@@ -265,7 +269,7 @@ function Library() {
       )}
 
       <section>
-        <h2 className="text-xl font-semibold mb-4">Favorites</h2>
+        <h2 className="text-xl font-semibold mb-4 text-center md:text-left">Favorites</h2>
         {isLoading && <p className="text-muted-foreground">Loading…</p>}
         {!isLoading && favorites.length === 0 && (
           <div className="text-center py-16 border border-dashed border-border rounded-lg">

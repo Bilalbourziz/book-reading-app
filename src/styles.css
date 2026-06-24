@@ -183,7 +183,6 @@
 
   /* Smooth image loading */
   img {
-    background-color: var(--color-secondary);
     transition: opacity 0.3s ease;
   }
 

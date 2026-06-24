@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { BookOpen, LogOut, Library as LibraryIcon, Search, Moon, Sun, User, Shield, Menu, PenLine } from "lucide-react";
+import { BookOpen, LogOut, Library as LibraryIcon, Moon, Sun, User, Shield, Menu, PenLine } from "lucide-react";
 import { isAdmin } from "@/lib/admin";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth-hook";
@@ -73,10 +73,8 @@ export function SiteHeader() {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3.5">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-accent grid place-items-center shadow-glow transition-transform group-hover:scale-105">
-            <BookOpen className="h-5 w-5 text-primary-foreground" />
-          </div>
+        <Link to="/" className="flex items-center gap-3 group">
+          <img src="/logo.png" alt="Logo" className="h-16 w-16 object-contain transition-transform group-hover:scale-105" />
           <span 
             className="font-display text-2xl tracking-tight"
             style={{ fontFamily: "Playfair Display, serif" }}
@@ -118,14 +116,6 @@ export function SiteHeader() {
 
         {/* Actions */}
         <div className="flex items-center gap-1.5">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="text-muted-foreground hover:text-foreground" 
-            onClick={() => navigate({ to: "/", search: { q: "" } as any })}
-          >
-            <Search className="h-4 w-4" />
-          </Button>
           <Button 
             variant="ghost" 
             size="icon" 
