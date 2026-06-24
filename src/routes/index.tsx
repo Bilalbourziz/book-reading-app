@@ -24,9 +24,13 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Lumen — A cinematic digital library" },
-      { name: "description", content: "Read timeless public-domain classics in a beautifully crafted reading room." },
+      { name: "description", content: "Read timeless public-domain classics in a beautifully crafted reading room. Browse hundreds of free classic books, save favorites, and pick up where you left off." },
+      { name: "keywords", content: "free books online, classic literature, public domain, digital library, read classics, free ebooks, online reading" },
       { property: "og:title", content: "Lumen — A cinematic digital library" },
-      { property: "og:description", content: "Browse, read, and bookmark public-domain classics." },
+      { property: "og:description", content: "Browse, read, and bookmark public-domain classics in a Netflix-style reading room." },
+      { property: "og:url", content: "https://lumen-book.click" },
+      { name: "twitter:title", content: "Lumen — A cinematic digital library" },
+      { name: "twitter:description", content: "Browse, read, and bookmark public-domain classics in a Netflix-style reading room." },
     ],
   }),
   component: Index,
@@ -135,7 +139,7 @@ function Index() {
             )}
             <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
           </div>
-          <div className="relative max-w-7xl mx-auto px-6 py-4 md:py-32 grid md:grid-cols-[1fr_260px] gap-10 items-center">
+          <div className="relative max-w-7xl mx-auto px-6 py-4 pt-10 md:pt-20 md:py-32 grid md:grid-cols-[1fr_260px] gap-10 items-center">
             <div className="animate-fade-in text-center md:text-left" key={featured.id + "-text"}>
               <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent mb-4">
                 <Sparkles className="h-3.5 w-3.5" /> Featured tonight
@@ -202,7 +206,7 @@ function Index() {
         </section>
       )}
 
-      <section className={`max-w-7xl mx-auto px-6 ${featured && !hasFilters ? "pt-4 md:pt-10" : "pt-20"} space-y-6`}>
+      <section className={`max-w-7xl mx-auto px-6 ${featured && !hasFilters ? "pt-4 md:pt-10" : "pt-20"} md:sticky md:top-16 md:z-30 md:bg-background/85 md:backdrop-blur-xl md:py-4 md:border-b md:border-border/40 space-y-6 transition-all duration-300`}>
         <div className="flex items-center gap-3">
           <div className="relative flex-1 max-w-xl">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

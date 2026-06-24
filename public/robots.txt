@@ -1,2 +1,23 @@
+# robots.txt — Lumen Digital Library
+# https://lumen-book.click
+
+# Allow all crawlers full access
 User-agent: *
 Allow: /
+
+# Disallow private/authenticated-only pages
+Disallow: /auth
+Disallow: /profile
+Disallow: /library
+Disallow: /submit-book
+Disallow: /admin
+Disallow: /admin/
+
+# XML Sitemap
+Sitemap: https://lumen-book.click/sitemap.xml
+
+# Crawl delay (be polite)
+Crawl-Delay: 10
+
+# Host (Google-specific)
+Host: https://lumen-book.click

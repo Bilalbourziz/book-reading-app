@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths(), tailwindcss()],
   server: {
     port: 5173,
+    host: true,
     open: true,
   },
   build: {

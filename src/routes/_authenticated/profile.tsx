@@ -15,7 +15,13 @@ import { ensureUserProfile, ensureProfileExistsOnce } from "@/lib/profile";
 import { AvatarEditor } from "@/components/avatar-editor";
 
 export const Route = createFileRoute("/_authenticated/profile")({
-  head: () => ({ meta: [{ title: "Profile — Lumen" }] }),
+  head: () => ({
+    meta: [
+      { title: "Profile — Lumen" },
+      { name: "description", content: "Manage your Lumen profile, reading stats, and preferences." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: Profile,
 });
 

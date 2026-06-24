@@ -15,7 +15,13 @@ import { uploadBookCover, uploadBookPdf } from "@/lib/upload-book";
 import { BookOpen, FileText, ImagePlus, Plus, Upload, X, User, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/submit-book")({
-  head: () => ({ meta: [{ title: "Submit Book — Lumen" }] }),
+  head: () => ({
+    meta: [
+      { title: "Submit Book — Lumen" },
+      { name: "description", content: "Submit a public-domain book to Lumen's digital library. Upload EPUB or PDF files." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: SubmitBook,
 });
 

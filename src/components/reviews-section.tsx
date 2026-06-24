@@ -244,13 +244,17 @@ export function ReviewsSection({ bookId, className }: ReviewsSectionProps) {
               </>
             ) : (
               <>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                      <span className="text-xs font-semibold">
-                        {getUserName(review).charAt(0).toUpperCase()}
-                      </span>
-                    </div>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center overflow-hidden">
+                        {review.profiles?.avatar_url ? (
+                          <img src={review.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-xs font-semibold">
+                            {getUserName(review).charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                      </div>
                     <div>
                       <p className="text-sm font-medium">{getUserName(review)}</p>
                       <p className="text-xs text-muted-foreground">

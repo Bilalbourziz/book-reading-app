@@ -11,7 +11,15 @@ import { BookOpen } from "lucide-react";
 import { ensureProfileExistsOnce } from "@/lib/profile";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Sign in — Lumen" }] }),
+  head: () => ({
+    meta: [
+      { title: "Sign in — Lumen" },
+      { name: "description", content: "Sign in or create an account to save favorites, bookmark pages, and track your reading progress on Lumen." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Sign in — Lumen" },
+      { property: "og:description", content: "Sign in or create an account to save favorites, bookmark pages, and track your reading progress." },
+    ],
+  }),
   beforeLoad: async () => {
     if (typeof window === "undefined") return;
     const { data } = await supabase.auth.getSession();

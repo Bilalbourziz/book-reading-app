@@ -22,7 +22,13 @@ export const Route = createFileRoute("/read/$id")({
     return { book: data };
   },
   head: ({ loaderData }) => ({
-    meta: [{ title: loaderData ? `Reading: ${loaderData.book.title}` : "Reader" }],
+    meta: [
+      { title: loaderData ? `Reading: ${loaderData.book.title} — Lumen` : "Reader — Lumen" },
+      { name: "description", content: loaderData ? `Read ${loaderData.book.title} by ${loaderData.book.author} on Lumen.` : "" },
+      { name: "robots", content: "index, follow" },
+      ...(loaderData ? [{ property: "og:title", content: `Reading: ${loaderData.book.title} — Lumen` }] : []),
+      ...(loaderData ? [{ property: "og:description", content: `Read ${loaderData.book.title} by ${loaderData.book.author} on Lumen.` }] : []),
+    ],
   }),
   notFoundComponent: () => <div className="p-12 text-center">Book not found.</div>,
   errorComponent: ({ error }) => <div className="p-12 text-center text-muted-foreground">{error.message}</div>,

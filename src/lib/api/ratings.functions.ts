@@ -18,6 +18,7 @@ export type Review = {
   updated_at: string;
   profiles?: {
     display_name?: string;
+    avatar_url?: string | null;
   };
 };
 
@@ -66,7 +67,8 @@ export async function getBookReviews(bookId: string, limit = 20, offset = 0): Pr
       created_at,
       updated_at,
       profiles:profiles!reviews_user_id_fkey (
-        display_name
+        display_name,
+        avatar_url
       )
     `)
     .eq("book_id", bookId)

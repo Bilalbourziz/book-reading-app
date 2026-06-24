@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth-hook";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,7 +33,9 @@ export function SiteHeader() {
   const isReader = useRouterState({ select: (s) => s.location.pathname.startsWith("/read/") });
   const [isDark, setIsDark] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const isDarkMode = document.documentElement.classList.contains("dark");
@@ -42,7 +44,14 @@ export function SiteHeader() {
 
   useEffect(() => {
     function onScroll() {
-      setScrolled(window.scrollY > 20);
+      const currentY = window.scrollY;
+      setScrolled(currentY > 20);
+      if (currentY > lastScrollY.current && currentY > 60) {
+        setHidden(true);
+      } else {
+        setHidden(false);
+      }
+      lastScrollY.current = currentY;
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -66,15 +75,17 @@ export function SiteHeader() {
   return (
     <header 
       className={`sticky top-0 z-40 transition-all duration-300 ${
+        hidden ? "-translate-y-full" : "translate-y-0"
+      } ${
         scrolled 
           ? "backdrop-blur-xl bg-background/80 border-b border-border/40 shadow-soft" 
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3.5">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6 py-2 md:py-3.5">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <img src="/logo.png" alt="Logo" className="h-16 w-16 object-contain transition-transform group-hover:scale-105" />
+          <img src="/logo.png" alt="Logo" className="h-12 w-12 md:h-16 md:w-16 object-contain transition-transform group-hover:scale-105" />
           <span 
             className="font-display text-2xl tracking-tight"
             style={{ fontFamily: "Playfair Display, serif" }}
@@ -180,21 +191,19 @@ export function SiteHeader() {
           )}
 
           {/* Mobile menu toggle */}
-          {!user && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="md:hidden text-muted-foreground"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <Menu className="h-4 w-4" />
-            </Button>
-          )}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden text-muted-foreground"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
       {/* Mobile menu */}
-      {mobileMenuOpen && !user && (
+      {mobileMenuOpen && (
         <div className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-xl animate-fade-in">
           <div className="px-6 py-4 space-y-2">
             <Link 
@@ -204,6 +213,24 @@ export function SiteHeader() {
             >
               Browse
             </Link>
+            {user && (
+              <>
+                <Link 
+                  to="/library" 
+                  className="block px-3 py-2 rounded-lg text-sm hover:bg-white/5 transition"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  My Library
+                </Link>
+                <Link 
+                  to="/submit-book" 
+                  className="block px-3 py-2 rounded-lg text-sm hover:bg-white/5 transition"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Submit Book
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
