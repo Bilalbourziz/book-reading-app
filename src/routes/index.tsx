@@ -25,12 +25,40 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Lumen — A cinematic digital library" },
       { name: "description", content: "Read timeless public-domain classics in a beautifully crafted reading room. Browse hundreds of free classic books, save favorites, and pick up where you left off." },
-      { name: "keywords", content: "free books online, classic literature, public domain, digital library, read classics, free ebooks, online reading" },
+      { name: "keywords", content: "free books online, classic literature, public domain, digital library, read classics, free ebooks, online reading, lumen-book" },
+      { name: "author", content: "Lumen" },
       { property: "og:title", content: "Lumen — A cinematic digital library" },
       { property: "og:description", content: "Browse, read, and bookmark public-domain classics in a Netflix-style reading room." },
+      { property: "og:type", content: "website" },
       { property: "og:url", content: "https://lumen-book.click" },
+      { property: "og:site_name", content: "Lumen" },
+      { property: "og:locale", content: "en_US" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Lumen — A cinematic digital library" },
       { name: "twitter:description", content: "Browse, read, and bookmark public-domain classics in a Netflix-style reading room." },
+      { name: "twitter:site", content: "@lumenapp" },
+      { name: "application-name", content: "Lumen" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://lumen-book.click" },
+      { rel: "alternate", hrefLang: "en", href: "https://lumen-book.click" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Lumen",
+          "url": "https://lumen-book.click",
+          "description": "A cinematic digital library of public-domain classics",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://lumen-book.click?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }),
+      },
     ],
   }),
   component: Index,

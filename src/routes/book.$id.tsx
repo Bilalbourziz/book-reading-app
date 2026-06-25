@@ -19,13 +19,47 @@ export const Route = createFileRoute("/book/$id")({
       ? {
           meta: [
             { title: `${loaderData.book.title} — Lumen` },
-            { name: "description", content: loaderData.book.description ?? "" },
+            { name: "description", content: loaderData.book.description ?? `Read ${loaderData.book.title} by ${loaderData.book.author} on Lumen.` },
+            { name: "author", content: loaderData.book.author },
             { property: "og:title", content: loaderData.book.title },
-            { property: "og:description", content: loaderData.book.description ?? "" },
-            ...(loaderData.book.cover_url ? [{ property: "og:image", content: loaderData.book.cover_url }] : []),
+            { property: "og:description", content: loaderData.book.description ?? `Read ${loaderData.book.title} by ${loaderData.book.author} on Lumen.` },
+            { property: "og:type", content: "book" },
+            { property: "og:url", content: `https://lumen-book.click/book/${loaderData.book.id}` },
+            ...(loaderData.book.cover_url ? [
+              { property: "og:image", content: loaderData.book.cover_url },
+              { property: "og:image:alt", content: loaderData.book.title },
+            ] : []),
+            { name: "twitter:card", content: "summary_large_image" },
+            { name: "twitter:title", content: loaderData.book.title },
+            { name: "twitter:description", content: loaderData.book.description ?? `Read ${loaderData.book.title} by ${loaderData.book.author} on Lumen.` },
+            ...(loaderData.book.cover_url ? [{ name: "twitter:image", content: loaderData.book.cover_url }] : []),
+          ],
+          links: [
+            { rel: "canonical", href: `https://lumen-book.click/book/${loaderData.book.id}` },
+          ],
+          scripts: [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Book",
+                "name": loaderData.book.title,
+                "author": {
+                  "@type": "Person",
+                  "name": loaderData.book.author,
+                },
+                ...(loaderData.book.description ? { "description": loaderData.book.description } : {}),
+                ...(loaderData.book.year ? { "datePublished": loaderData.book.year.toString() } : {}),
+                ...(loaderData.book.cover_url ? { "image": loaderData.book.cover_url } : {}),
+                "url": `https://lumen-book.click/book/${loaderData.book.id}`,
+              }),
+            },
           ],
         }
-      : { meta: [{ title: "Book — Lumen" }] },
+      : { 
+          meta: [{ title: "Book — Lumen" }],
+          links: [{ rel: "canonical", href: "https://lumen-book.click" }],
+        },
   notFoundComponent: () => (
     <div className="max-w-3xl mx-auto px-6 py-24 text-center">
       <div className="w-20 h-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-6">

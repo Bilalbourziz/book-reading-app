@@ -148,6 +148,9 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 - [ ] Check Cloudflare caching settings
 - [ ] Set up Cloudflare Page Rules for SPA routing
 - [ ] Configure custom error pages if needed
+- [ ] Submit sitemap to Google Search Console: https://lumen-book.click/sitemap.xml
+- [ ] Verify robots.txt is accessible: https://lumen-book.click/robots.txt
+- [ ] Test sitemap validation at https://www.xml-sitemaps.com/validate-xml-sitemap.html
 
 ---
 

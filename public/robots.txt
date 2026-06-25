@@ -14,7 +14,7 @@ Disallow: /admin
 Disallow: /admin/
 
 # XML Sitemap
-Sitemap: https://lumen-book.click/sitemap.xml
+Sitemap: https://lumen-book.click/sitemap-xml
 
 # Crawl delay (be polite)
 Crawl-Delay: 10
