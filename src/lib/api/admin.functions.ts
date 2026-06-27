@@ -1,13 +1,14 @@
 import { z } from "zod";
 
 import { supabase } from "@/integrations/supabase/client";
+import { isAdmin } from "@/lib/admin";
 
 const bookInputSchema = z.object({
-  title: z.string().min(1),
-  author: z.string().min(1),
+  title: z.string().min(1, "Title is required"),
+  author: z.string().min(1, "Author is required"),
   description: z.string().optional(),
   cover_url: z.string().optional(),
-  content_url: z.string().min(1),
+  content_url: z.string().min(1, "Content URL is required"),
   language: z.string().default("en"),
   year: z.number().nullable().optional(),
   categories: z.array(z.string()).default([]),
@@ -15,7 +16,16 @@ const bookInputSchema = z.object({
   external_id: z.string().optional(),
 });
 
+async function requireAdmin() {
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error || !user) throw new Error("You must be signed in.");
+  if (!isAdmin(user.email)) throw new Error("Only admins can perform this action.");
+  return user;
+}
+
 export async function listAdminUsers() {
+  await requireAdmin();
+
   const { data: profiles, error } = await supabase
     .from("profiles")
     .select("id, display_name, created_at")
@@ -32,12 +42,16 @@ export async function listAdminUsers() {
 }
 
 export async function deleteAdminUser(userId: string) {
+  await requireAdmin();
+
   const { error } = await supabase.from("profiles").delete().eq("id", userId);
   if (error) throw error;
   return { success: true };
 }
 
 export async function updateAdminUserProfile(userId: string, display_name: string) {
+  await requireAdmin();
+
   const { error } = await supabase
     .from("profiles")
     .update({ display_name })
@@ -53,35 +67,47 @@ export async function updateAdminUserPassword(_userId: string, _password: string
 }
 
 export async function createAdminBook(data: z.infer<typeof bookInputSchema>) {
+  await requireAdmin();
+
+  const validated = bookInputSchema.parse(data);
+
   const { error } = await supabase.from("books").insert({
-    title: data.title,
-    author: data.author,
-    description: data.description || null,
-    cover_url: data.cover_url || null,
-    content_url: data.content_url,
-    language: data.language,
-    year: data.year ?? null,
-    categories: data.categories,
-    source: data.source,
-    external_id: data.external_id || null,
+    title: validated.title,
+    author: validated.author,
+    description: validated.description || null,
+    cover_url: validated.cover_url || null,
+    content_url: validated.content_url,
+    language: validated.language,
+    year: validated.year ?? null,
+    categories: validated.categories,
+    source: validated.source,
+    external_id: validated.external_id || null,
   });
   if (error) throw error;
   return { success: true };
 }
 
 export async function updateAdminBook(bookId: string, data: z.infer<typeof bookInputSchema>) {
-  const { error } = await supabase.from("books").update(data).eq("id", bookId);
+  await requireAdmin();
+
+  const validated = bookInputSchema.parse(data);
+
+  const { error } = await supabase.from("books").update(validated).eq("id", bookId);
   if (error) throw error;
   return { success: true };
 }
 
 export async function deleteAdminBook(bookId: string) {
+  await requireAdmin();
+
   const { error } = await supabase.from("books").delete().eq("id", bookId);
   if (error) throw error;
   return { success: true };
 }
 
 export async function getAdminDashboardStats() {
+  await requireAdmin();
+
   const [books, users, favorites, bookmarks, progress] = await Promise.all([
     supabase.from("books").select("*", { count: "exact", head: true }),
     supabase.from("profiles").select("*", { count: "exact", head: true }),
@@ -100,6 +126,8 @@ export async function getAdminDashboardStats() {
 }
 
 export async function getAdminFavoritedBooks() {
+  await requireAdmin();
+
   const { data, error } = await supabase
     .from("favorites")
     .select("book:books(id, title, author, cover_url)");
@@ -124,6 +152,8 @@ export async function getAdminFavoritedBooks() {
 }
 
 export async function getAdminProgressOverview() {
+  await requireAdmin();
+
   const { data, error, count } = await supabase
     .from("reading_progress")
     .select("user_id, book_id, last_page, updated_at, book:books(id, title, author, cover_url)", {
@@ -164,6 +194,8 @@ export async function getAdminProgressOverview() {
 }
 
 export async function getAdminUserStats(userId: string) {
+  await requireAdmin();
+
   const [favoritesCount, progressCount, bookmarksCount] = await Promise.all([
     supabase.from("favorites").select("*", { count: "exact", head: true }).eq("user_id", userId),
     supabase.from("reading_progress").select("*", { count: "exact", head: true }).eq("user_id", userId),

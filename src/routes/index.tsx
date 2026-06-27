@@ -234,7 +234,7 @@ function Index() {
         </section>
       )}
 
-      <section className={`max-w-7xl mx-auto px-6 ${featured && !hasFilters ? "pt-4 md:pt-10" : "pt-20"} md:sticky md:top-16 md:z-30 md:bg-background/85 md:backdrop-blur-xl md:py-4 md:border-b md:border-border/40 space-y-6 transition-all duration-300`}>
+      <section className={`max-w-7xl mx-auto px-6 ${featured && !hasFilters ? "pt-4 md:pt-10" : "pt-20"} space-y-6 transition-all duration-300`}>
         <div className="flex items-center gap-3">
           <div className="relative flex-1 max-w-xl">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

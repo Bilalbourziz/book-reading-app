@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { isAdmin } from "@/lib/admin";
 
 export type BookSubmission = {
   id: string;
@@ -32,13 +33,24 @@ export async function createBookSubmission(data: {
   source?: string;
   userId: string;
 }) {
+  // Get the authenticated user from the server — don't trust client-supplied userId
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+  if (authError || !authUser) {
+    throw new Error("You must be signed in to submit a book.");
+  }
+
   if (!data.userId) {
     throw new Error("User ID is required. Please sign in and try again.");
   }
 
+  // Verify the authenticated user matches the claimed userId
+  if (authUser.id !== data.userId) {
+    throw new Error("User ID mismatch. Please sign in again.");
+  }
+
   // Prepare the submission data
   const submissionData = {
-    user_id: data.userId,
+    user_id: authUser.id,
     title: data.title,
     author: data.author,
     description: data.description || null,
@@ -102,6 +114,11 @@ export async function updateSubmissionStatus(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("You must be signed in");
 
+  // Verify the user is an admin
+  if (!isAdmin(user.email)) {
+    throw new Error("Only admins can approve or reject submissions.");
+  }
+
   const { data, error } = await supabase
     .from("book_submissions")
     .update({
@@ -119,6 +136,12 @@ export async function updateSubmissionStatus(
 }
 
 export async function approveSubmission(submissionId: string, adminNotes?: string) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("You must be signed in");
+  if (!isAdmin(user.email)) {
+    throw new Error("Only admins can approve submissions.");
+  }
+
   // First, get the submission data
   const { data: submission, error: fetchError } = await supabase
     .from("book_submissions")

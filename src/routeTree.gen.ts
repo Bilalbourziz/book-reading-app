@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapXmlRouteImport } from './routes/sitemap-xml'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -24,11 +23,6 @@ import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminSubmissionsRouteImport } from './routes/_authenticated/admin/submissions'
 import { Route as AuthenticatedAdminBooksRouteImport } from './routes/_authenticated/admin/books'
 
-const SitemapXmlRoute = SitemapXmlRouteImport.update({
-  id: '/sitemap-xml',
-  path: '/sitemap-xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -98,7 +92,6 @@ const AuthenticatedAdminBooksRoute = AuthenticatedAdminBooksRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/sitemap-xml': typeof SitemapXmlRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/library': typeof AuthenticatedLibraryRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -113,7 +106,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/sitemap-xml': typeof SitemapXmlRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/submit-book': typeof AuthenticatedSubmitBookRoute
@@ -129,7 +121,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/sitemap-xml': typeof SitemapXmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -146,7 +137,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/sitemap-xml'
     | '/admin'
     | '/library'
     | '/profile'
@@ -161,7 +151,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/sitemap-xml'
     | '/library'
     | '/profile'
     | '/submit-book'
@@ -176,7 +165,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/sitemap-xml'
     | '/_authenticated/admin'
     | '/_authenticated/library'
     | '/_authenticated/profile'
@@ -193,20 +181,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  SitemapXmlRoute: typeof SitemapXmlRoute
   BookIdRoute: typeof BookIdRoute
   ReadIdRoute: typeof ReadIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap-xml': {
-      id: '/sitemap-xml'
-      path: '/sitemap-xml'
-      fullPath: '/sitemap-xml'
-      preLoaderRoute: typeof SitemapXmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -339,7 +319,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  SitemapXmlRoute: SitemapXmlRoute,
   BookIdRoute: BookIdRoute,
   ReadIdRoute: ReadIdRoute,
 }

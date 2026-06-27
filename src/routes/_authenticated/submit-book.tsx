@@ -8,11 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+import { ChevronsUpDown, Check, BookOpen, FileText, ImagePlus, Upload, X, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/auth-hook";
 import { createBookSubmission, getUserSubmissions, deleteSubmission } from "@/lib/api/book-submissions.functions";
 import { uploadBookCover, uploadBookPdf } from "@/lib/upload-book";
-import { BookOpen, FileText, ImagePlus, Plus, Upload, X, User, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/submit-book")({
   head: () => ({
@@ -42,6 +45,96 @@ type Submission = {
   updated_at: string;
 };
 
+const BOOK_TYPES = [
+  "Fiction",
+  "Romance",
+  "Mystery",
+  "Sci-Fi",
+  "Adventure",
+  "Gothic",
+  "Historical",
+  "Drama",
+  "Fantasy",
+  "Horror",
+  "Biography",
+  "Poetry",
+  "Philosophy",
+  "Science",
+  "Travel",
+  "Children",
+  "Short Stories",
+  "Essays",
+  "Satire",
+  "Thriller",
+];
+
+function MultiCategorySelect({
+  selected,
+  onChange,
+}: {
+  selected: string[];
+  onChange: (categories: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  function toggle(type: string) {
+    onChange(
+      selected.includes(type)
+        ? selected.filter((c) => c !== type)
+        : [...selected, type],
+    );
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between bg-background/50 border-border/60 h-12"
+        >
+          {selected.length > 0
+            ? `${selected.length} selected`
+            : "Select categories..."}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+        <Command>
+          <CommandInput placeholder="Search categories..." />
+          <CommandList>
+            <CommandEmpty>No category found.</CommandEmpty>
+            <CommandGroup>
+              {BOOK_TYPES.map((type) => (
+                <CommandItem
+                  key={type}
+                  value={type}
+                  onSelect={() => toggle(type)}
+                >
+                  <div
+                    className={cn(
+                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                      selected.includes(type)
+                        ? "bg-primary text-primary-foreground"
+                        : "opacity-50",
+                    )}
+                  >
+                    {selected.includes(type) && (
+                      <Check className="h-3 w-3" />
+                    )}
+                  </div>
+                  {type}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function SubmitBook() {
   const { user } = useSession();
   const qc = useQueryClient();
@@ -56,7 +149,7 @@ function SubmitBook() {
   const [contentUrl, setContentUrl] = useState("");
   const [year, setYear] = useState("");
   const [language, setLanguage] = useState("en");
-  const [categories, setCategories] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [uploadStep, setUploadStep] = useState("");
@@ -137,7 +230,7 @@ function SubmitBook() {
         content_url: finalContentUrl,
         year: year ? parseInt(year, 10) : undefined,
         language,
-        categories: categories.split(",").map(c => c.trim()).filter(Boolean),
+        categories,
         source: pdfFile ? "pdf" : "link",
         userId: user.id,
       });
@@ -154,7 +247,7 @@ function SubmitBook() {
       setContentUrl("");
       setYear("");
       setLanguage("en");
-      setCategories("");
+      setCategories([]);
       setPdfFile(null);
       setCoverFile(null);
     },
@@ -278,7 +371,7 @@ function SubmitBook() {
             <input
               ref={coverInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image.webp"
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -334,13 +427,10 @@ function SubmitBook() {
 
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="categories" className="text-sm font-medium">Categories</Label>
-            <Input
-              id="categories"
-              value={categories}
-              onChange={(e) => setCategories(e.target.value)}
-              placeholder="Fiction, Romance, Fantasy (comma-separated)"
-              className="bg-background/50"
-            />
+            <MultiCategorySelect selected={categories} onChange={setCategories} />
+            {categories.length > 0 && (
+              <p className="text-xs text-muted-foreground">{categories.length} selected</p>
+            )}
           </div>
         </div>
 

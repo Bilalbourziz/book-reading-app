@@ -43,7 +43,7 @@ export async function getTopFavoritedBooks(): Promise<TopBook[]> {
   // Sort book IDs by favorite count desc
   const sorted = [...counts.entries()]
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 6);
+    .slice(0, 4);
 
   const bookIds = sorted.map(([id]) => id);
 
