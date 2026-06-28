@@ -85,7 +85,7 @@ export function SiteHeader() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6 py-2 md:py-3.5">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <img src="/logo.png" alt="Logo" className="h-12 w-12 md:h-16 md:w-16 object-contain transition-transform group-hover:scale-105" />
+          <img src="/logo.png" alt="Logo" className="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" />
           <span 
             className="font-display text-2xl tracking-tight"
             style={{ fontFamily: "Playfair Display, serif" }}

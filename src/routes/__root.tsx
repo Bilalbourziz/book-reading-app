@@ -112,6 +112,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" },
       { rel: "canonical", href: "https://lumen-book.click" },
       { rel: "alternate", hrefLang: "en", href: "https://lumen-book.click" },
+      { rel: "icon", type: "image/png", sizes: "128x128", href: "/logo.png" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/logo.png" },
     ],
   }),
   component: RootComponent,
