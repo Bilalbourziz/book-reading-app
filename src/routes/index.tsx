@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
-import { Search, BookOpen, Sparkles, ArrowRight, SlidersHorizontal, X, Heart } from "lucide-react";
+import { Search, BookOpen, Sparkles, ArrowRight, SlidersHorizontal, X, Heart, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { getTopFavoritedBooks, getTotalFavoritesCount } from "@/lib/api/books.functions";
@@ -155,7 +155,8 @@ function Index() {
   return (
     <div>
       {featured && !hasFilters && (
-        <section className="relative overflow-hidden">
+        <section className="relative overflow-hidden min-h-[calc(100dvh-80px)] flex items-center">
+          {/* Background layer — static */}
           <div className="absolute inset-0">
             {featured.cover_url && (
               <img
@@ -166,14 +167,17 @@ function Index() {
               />
             )}
             <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
           </div>
-          <div className="relative max-w-7xl mx-auto px-6 py-4 pt-10 md:pt-20 md:py-32 grid md:grid-cols-[1fr_260px] gap-10 items-center">
+
+          {/* Foreground content — perfectly centered in the viewport */}
+          <div className="relative w-full max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-[1fr_260px] gap-10 items-center">
             <div className="animate-fade-in text-center md:text-left" key={featured.id + "-text"}>
               <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent mb-4">
                 <Sparkles className="h-3.5 w-3.5" /> Featured tonight
               </div>
               <h1
-                className="text-3xl md:text-7xl font-bold leading-[1.05] mb-4 tracking-tight"
+                className="text-4xl md:text-7xl font-bold leading-[1.05] mb-4 tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70"
                 style={{ fontFamily: "Playfair Display, serif" }}
               >
                 {featured.title}
@@ -183,18 +187,16 @@ function Index() {
                 {featured.year && <span className="mx-2 text-muted-foreground/50">·</span>}
                 {featured.year}
               </p>
-              <p className="text-foreground/70 leading-relaxed mb-4 line-clamp-2 max-w-prose mx-auto md:mx-0">
+              <p className="text-foreground/70 leading-relaxed mb-6 line-clamp-3 max-w-prose mx-auto md:mx-0">
                 {featured.description}
               </p>
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-6">
                 {books.length > 1 && books.slice(0, 10).map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setFeaturedIndex(idx)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      idx === featuredIndex
-                        ? "bg-accent scale-125"
-                        : "bg-white/20 hover:bg-white/40"
+                    className={`h-1.5 rounded-full transition-all duration-500 ${
+                      idx === featuredIndex ? "bg-accent w-8" : "bg-white/20 hover:bg-white/40 w-1.5"
                     }`}
                     aria-label={`Show book ${idx + 1}`}
                   />
@@ -202,34 +204,41 @@ function Index() {
               </div>
               <div className="flex items-center justify-center md:justify-start gap-3">
                 <Link to="/read/$id" params={{ id: featured.id }}>
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground border-0 shadow-glow group">
+                  <Button size="lg" className="bg-gradient-to-r from-primary to-accent hover:opacity-90 hover:scale-[1.02] text-primary-foreground border-0 shadow-glow group transition-transform">
                     <BookOpen className="h-4 w-4 mr-2" /> Start reading
                     <ArrowRight className="h-4 w-4 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                   </Button>
                 </Link>
                 <Link to="/book/$id" params={{ id: featured.id }}>
-                  <Button size="lg" variant="secondary" className="backdrop-blur-sm bg-white/5 hover:bg-white/10 border-white/10">
+                  <Button size="lg" variant="secondary" className="backdrop-blur-sm bg-white/5 hover:bg-white/10 border-white/10 hover:scale-[1.02] transition-transform">
                     More info
                   </Button>
                 </Link>
               </div>
             </div>
+
             <div className="animate-fade-in-scale w-full max-w-[220px] mx-auto" key={featured.id + "-cover"}>
-              <div className="relative aspect-[2/3]">
-                <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl blur-2xl" />
+              <div className="relative aspect-[2/3] group">
+                <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl blur-2xl transition-all duration-700 group-hover:blur-3xl group-hover:from-primary/30 group-hover:to-accent/30" />
                 {featured.cover_url ? (
                   <img
                     src={featured.cover_url}
                     alt={featured.title}
-                    className="w-full h-full rounded-lg shadow-cinematic ring-1 ring-white/10 relative object-cover"
+                    className="w-full h-full rounded-lg shadow-cinematic ring-1 ring-white/10 relative object-cover transition-transform duration-500 group-hover:-translate-y-1 group-hover:rotate-1"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-lg bg-secondary ring-1 ring-white/10 flex items-center justify-center">
+                  <div className="w-full h-full rounded-lg bg-secondary ring-1 ring-white/10 flex items-center justify-center relative">
                     <BookOpen className="h-10 w-10 text-muted-foreground/40" />
                   </div>
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Scroll cue — static */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-muted-foreground/70">
+            <span className="text-[11px] uppercase tracking-[0.2em]">SCROLL DOWN</span>
+            <ChevronDown className="h-4 w-4 animate-bounce" />
           </div>
         </section>
       )}
@@ -357,7 +366,7 @@ function Index() {
             </div>
           </div>
         )}
-        
+
         {!isLoading && (q || language || genre) ? (
           <>
             <div className="animate-fade-in-up">
