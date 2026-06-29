@@ -72,6 +72,7 @@ function Index() {
   const [featuredIndex, setFeaturedIndex] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
   const searchSectionRef = useRef<HTMLDivElement>(null);
+
   const { data: books = [], isLoading } = useQuery({
     queryKey: ["books"],
     queryFn: async () => {
@@ -154,214 +155,214 @@ function Index() {
 
   return (
     <div>
-{/* HERO — ref removed, original className restored */}
-{featured && !hasFilters && (
-  <section className="relative overflow-hidden min-h-[calc(100dvh-80px)] flex items-center">
-    {/* Background layer — static */}
-    <div className="absolute inset-0">
-      {featured.cover_url && (
-        <img
-          src={featured.cover_url}
-          alt=""
-          aria-hidden
-          className="w-full h-full object-cover scale-110 blur-2xl opacity-40"
-        />
-      )}
-      <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
-    </div>
+      {featured && !hasFilters && (
+        <section className="relative overflow-hidden min-h-[calc(100dvh-80px)] flex items-center">
+          {/* Background layer — static */}
+          <div className="absolute inset-0">
+            {featured.cover_url && (
+              <img
+                src={featured.cover_url}
+                alt=""
+                aria-hidden
+                className="w-full h-full object-cover scale-110 blur-2xl opacity-40"
+              />
+            )}
+            <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
+          </div>
 
-    <div className="relative w-full max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-[1fr_260px] gap-10 items-center">
-      <div className="animate-fade-in text-center md:text-left" key={featured.id + "-text"}>
-        <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent mb-4">
-          <Sparkles className="h-3.5 w-3.5" /> Featured tonight
-        </div>
-        <h1
-          className="text-4xl md:text-7xl font-bold leading-[1.6] mb-4 tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70"
-          style={{ fontFamily: "Playfair Display, serif" }}
-        >
-          {featured.title}
-        </h1>
-        <p className="text-muted-foreground text-base mb-2">
-          by {featured.author}
-          {featured.year && <span className="mx-2 text-muted-foreground/50">·</span>}
-          {featured.year}
-        </p>
-        <p className="text-foreground/70 leading-relaxed mb-6 line-clamp-3 max-w-prose mx-auto md:mx-0">
-          {featured.description}
-        </p>
-        <div className="flex items-center justify-center md:justify-start gap-2 mb-6">
-          {books.length > 1 && books.slice(0, 10).map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setFeaturedIndex(idx)}
-              className={`h-1.5 rounded-full transition-all duration-500 ${
-                idx === featuredIndex ? "bg-accent w-8" : "bg-white/20 hover:bg-white/40 w-1.5"
-              }`}
-              aria-label={`Show book ${idx + 1}`}
-            />
-          ))}
-        </div>
-        <div className="flex items-center justify-center md:justify-start gap-3">
-          <Link to="/read/$id" params={{ id: featured.id }}>
-            <Button size="lg" className="bg-gradient-to-r from-primary to-accent hover:opacity-90 hover:scale-[1.02] text-primary-foreground border-0 shadow-glow group transition-transform">
-              <BookOpen className="h-4 w-4 mr-2" /> Start reading
-              <ArrowRight className="h-4 w-4 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-            </Button>
-          </Link>
-          <Link to="/book/$id" params={{ id: featured.id }}>
-            <Button size="lg" variant="secondary" className="backdrop-blur-sm bg-white/5 hover:bg-white/10 border-white/10 hover:scale-[1.02] transition-transform">
-              More info
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      <div className="animate-fade-in-scale w-full max-w-[220px] mx-auto" key={featured.id + "-cover"}>
-        <div className="relative aspect-[2/3] group">
-          <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl blur-2xl transition-all duration-700 group-hover:blur-3xl group-hover:from-primary/30 group-hover:to-accent/30" />
-          {featured.cover_url ? (
-            <img
-              src={featured.cover_url}
-              alt={featured.title}
-              className="w-full h-full rounded-lg shadow-cinematic ring-1 ring-white/10 relative object-cover transition-transform duration-500 group-hover:-translate-y-1 group-hover:rotate-1"
-            />
-          ) : (
-            <div className="w-full h-full rounded-lg bg-secondary ring-1 ring-white/10 flex items-center justify-center relative">
-              <BookOpen className="h-10 w-10 text-muted-foreground/40" />
+          {/* Foreground content — stacks on mobile, side-by-side from md+ */}
+          <div className="relative w-full max-w-7xl mx-auto px-6 py-10 md:py-16 grid grid-cols-1 md:grid-cols-[1fr_260px] gap-6 md:gap-10 items-center">
+            {/* Cover shows first on mobile (visual hook), second on desktop */}
+            <div className="order-1 md:order-2 animate-fade-in-scale w-full max-w-[160px] sm:max-w-[190px] md:max-w-[220px] mx-auto" key={featured.id + "-cover"}>
+              <div className="relative aspect-[2/3] group">
+                <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl blur-2xl transition-all duration-700 group-hover:blur-3xl group-hover:from-primary/30 group-hover:to-accent/30" />
+                {featured.cover_url ? (
+                  <img
+                    src={featured.cover_url}
+                    alt={featured.title}
+                    className="w-full h-full rounded-lg shadow-cinematic ring-1 ring-white/10 relative object-cover transition-transform duration-500 group-hover:-translate-y-1 group-hover:rotate-1"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-lg bg-secondary ring-1 ring-white/10 flex items-center justify-center relative">
+                    <BookOpen className="h-10 w-10 text-muted-foreground/40" />
+                  </div>
+                )}
+              </div>
             </div>
+
+            <div className="order-2 md:order-1 animate-fade-in text-center md:text-left" key={featured.id + "-text"}>
+              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent mb-3 md:mb-4">
+                <Sparkles className="h-3.5 w-3.5" /> Featured tonight
+              </div>
+              <h1
+                className="text-3xl sm:text-4xl md:text-7xl font-bold leading-[1.6] mb-3 md:mb-4 tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70"
+                style={{ fontFamily: "Playfair Display, serif" }}
+              >
+                {featured.title}
+              </h1>
+              <p className="text-muted-foreground text-sm md:text-base mb-2">
+                by {featured.author}
+                {featured.year && <span className="mx-2 text-muted-foreground/50">·</span>}
+                {featured.year}
+              </p>
+              <p className="text-foreground/70 text-sm md:text-base leading-relaxed mb-5 md:mb-6 line-clamp-2 md:line-clamp-3 max-w-prose mx-auto md:mx-0">
+                {featured.description}
+              </p>
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-6 flex-wrap">
+                {books.length > 1 && books.slice(0, 10).map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setFeaturedIndex(idx)}
+                    className={`h-1.5 rounded-full transition-all duration-500 ${
+                      idx === featuredIndex ? "bg-accent w-8" : "bg-white/20 hover:bg-white/40 w-1.5"
+                    }`}
+                    aria-label={`Show book ${idx + 1}`}
+                  />
+                ))}
+              </div>
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 w-full">
+                <Link to="/read/$id" params={{ id: featured.id }} className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90 hover:scale-[1.02] text-primary-foreground border-0 shadow-glow group transition-transform">
+                    <BookOpen className="h-4 w-4 mr-2" /> Start reading
+                    <ArrowRight className="h-4 w-4 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                  </Button>
+                </Link>
+                <Link to="/book/$id" params={{ id: featured.id }} className="w-full sm:w-auto">
+                  <Button size="lg" variant="secondary" className="w-full sm:w-auto backdrop-blur-sm bg-white/5 hover:bg-white/10 border-white/10 hover:scale-[1.02] transition-transform">
+                    More info
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Scroll cue — desktop only, avoids overlapping longer mobile text blocks */}
+          <button
+            onClick={() => searchSectionRef.current?.scrollIntoView({ behavior: "smooth" })}
+            className="hidden sm:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-1 text-muted-foreground/70 hover:text-foreground transition-colors cursor-pointer"
+            aria-label="Scroll down"
+          >
+            <span className="text-[11px] uppercase tracking-[0.2em]">SCROLL DOWN</span>
+            <ChevronDown className="h-4 w-4 animate-bounce" />
+          </button>
+        </section>
+      )}
+
+      <section
+        ref={searchSectionRef}
+        className={`max-w-7xl mx-auto px-6 ${featured && !hasFilters ? "pt-6 md:pt-10" : "pt-12 sm:pt-20"} space-y-5 md:space-y-6 transition-all duration-300`}
+      >
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 max-w-xl">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              ref={searchRef}
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder='Search by title or author…'
+              className="pl-11 h-12 bg-card/50 border-border/60 focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/20 transition-all placeholder:text-muted-foreground/50 text-base"
+            />
+            {q && (
+              <button
+                onClick={() => setQ("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-12 w-12 md:hidden shrink-0 border-border/60"
+            onClick={() => setShowMobileFilters(!showMobileFilters)}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="hidden md:flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-muted-foreground">Language</label>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="px-3 py-2 rounded-lg bg-card/50 border border-border/60 text-sm hover:bg-card/80 transition cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 appearance-none"
+            >
+              <option value="">All Languages</option>
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+              <option value="ar">العربية</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-muted-foreground">Genre</label>
+            <select
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+              className="px-3 py-2 rounded-lg bg-card/50 border border-border/60 text-sm hover:bg-card/80 transition cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 appearance-none"
+            >
+              <option value="">All Genres</option>
+              <option value="Fiction">Fiction</option>
+              <option value="Romance">Romance</option>
+              <option value="Mystery">Mystery</option>
+              <option value="Sci-Fi">Sci-Fi</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Gothic">Gothic</option>
+              <option value="Historical">Historical</option>
+              <option value="Drama">Drama</option>
+              <option value="Fantasy">Fantasy</option>
+              <option value="Horror">Horror</option>
+            </select>
+          </div>
+          {hasFilters && (
+            <button
+              onClick={() => { setQ(""); setLanguage(""); setGenre(""); }}
+              className="text-sm text-muted-foreground hover:text-foreground transition inline-flex items-center gap-1"
+            >
+              <X className="h-3 w-3" /> Clear all
+            </button>
           )}
         </div>
-      </div>
-    </div>
 
-    {/* Scroll cue — clickable */}
-    <button
-      onClick={() => searchSectionRef.current?.scrollIntoView({ behavior: "smooth" })}
-      className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-muted-foreground/70 hover:text-foreground transition-colors cursor-pointer"
-      aria-label="Scroll down"
-    >
-      <span className="text-[11px] uppercase tracking-[0.2em]">SCROLL DOWN</span>
-      <ChevronDown className="h-4 w-4 animate-bounce" />
-    </button>
-  </section>
-)}
+        {showMobileFilters && (
+          <div className="md:hidden glass-strong rounded-xl p-4 space-y-4 animate-fade-in">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Filters</span>
+              <button onClick={() => setShowMobileFilters(false)} className="text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <select value={language} onChange={(e) => setLanguage(e.target.value)} className="px-3 py-2 rounded-lg bg-background/50 border border-border/60 text-sm">
+                <option value="">Language</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+                <option value="ar">العربية</option>
+              </select>
+              <select value={genre} onChange={(e) => setGenre(e.target.value)} className="px-3 py-2 rounded-lg bg-background/50 border border-border/60 text-sm">
+                <option value="">Genre</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Romance">Romance</option>
+                <option value="Mystery">Mystery</option>
+                <option value="Sci-Fi">Sci-Fi</option>
+              </select>
+            </div>
+            {hasFilters && (
+              <button onClick={() => { setQ(""); setLanguage(""); setGenre(""); }} className="text-sm text-muted-foreground hover:text-foreground transition text-center w-full">
+                Clear all filters
+              </button>
+            )}
+          </div>
+        )}
+      </section>
 
-{/* SEARCH SECTION — ref added here instead */}
-<section
-  ref={searchSectionRef}
-  className={`max-w-7xl mx-auto px-6 ${featured && !hasFilters ? "pt-4 md:pt-10" : "pt-20"} space-y-6 transition-all duration-300`}
->
-  <div className="flex items-center gap-3">
-    <div className="relative flex-1 max-w-xl">
-      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-      <Input
-        ref={searchRef}
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder='Search by title or author… (⌘K)'
-        className="pl-11 h-12 bg-card/50 border-border/60 focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/20 transition-all placeholder:text-muted-foreground/50 text-base"
-      />
-      {q && (
-        <button
-          onClick={() => setQ("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      )}
-    </div>
-    <Button
-      variant="outline"
-      size="icon"
-      className="h-12 w-12 md:hidden shrink-0 border-border/60"
-      onClick={() => setShowMobileFilters(!showMobileFilters)}
-    >
-      <SlidersHorizontal className="h-4 w-4" />
-    </Button>
-  </div>
-
-  <div className="hidden md:flex flex-wrap items-center gap-4">
-    <div className="flex items-center gap-2">
-      <label className="text-sm font-medium text-muted-foreground">Language</label>
-      <select
-        value={language}
-        onChange={(e) => setLanguage(e.target.value)}
-        className="px-3 py-2 rounded-lg bg-card/50 border border-border/60 text-sm hover:bg-card/80 transition cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 appearance-none"
-      >
-        <option value="">All Languages</option>
-        <option value="en">English</option>
-        <option value="fr">Français</option>
-        <option value="ar">العربية</option>
-      </select>
-    </div>
-    <div className="flex items-center gap-2">
-      <label className="text-sm font-medium text-muted-foreground">Genre</label>
-      <select
-        value={genre}
-        onChange={(e) => setGenre(e.target.value)}
-        className="px-3 py-2 rounded-lg bg-card/50 border border-border/60 text-sm hover:bg-card/80 transition cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 appearance-none"
-      >
-        <option value="">All Genres</option>
-        <option value="Fiction">Fiction</option>
-        <option value="Romance">Romance</option>
-        <option value="Mystery">Mystery</option>
-        <option value="Sci-Fi">Sci-Fi</option>
-        <option value="Adventure">Adventure</option>
-        <option value="Gothic">Gothic</option>
-        <option value="Historical">Historical</option>
-        <option value="Drama">Drama</option>
-        <option value="Fantasy">Fantasy</option>
-        <option value="Horror">Horror</option>
-      </select>
-    </div>
-    {hasFilters && (
-      <button
-        onClick={() => { setQ(""); setLanguage(""); setGenre(""); }}
-        className="text-sm text-muted-foreground hover:text-foreground transition inline-flex items-center gap-1"
-      >
-        <X className="h-3 w-3" /> Clear all
-      </button>
-    )}
-  </div>
-
-  {showMobileFilters && (
-    <div className="md:hidden glass-strong rounded-xl p-4 space-y-4 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">Filters</span>
-        <button onClick={() => setShowMobileFilters(false)} className="text-muted-foreground hover:text-foreground">
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <select value={language} onChange={(e) => setLanguage(e.target.value)} className="px-3 py-2 rounded-lg bg-background/50 border border-border/60 text-sm">
-          <option value="">Language</option>
-          <option value="en">English</option>
-          <option value="fr">Français</option>
-          <option value="ar">العربية</option>
-        </select>
-        <select value={genre} onChange={(e) => setGenre(e.target.value)} className="px-3 py-2 rounded-lg bg-background/50 border border-border/60 text-sm">
-          <option value="">Genre</option>
-          <option value="Fiction">Fiction</option>
-          <option value="Romance">Romance</option>
-          <option value="Mystery">Mystery</option>
-          <option value="Sci-Fi">Sci-Fi</option>
-        </select>
-      </div>
-      {hasFilters && (
-        <button onClick={() => { setQ(""); setLanguage(""); setGenre(""); }} className="text-sm text-muted-foreground hover:text-foreground transition text-center w-full">
-          Clear all filters
-        </button>
-      )}
-    </div>
-  )}
-</section>
-
-      <section className="max-w-7xl mx-auto px-6 py-12 space-y-16">
+      <section className="max-w-7xl mx-auto px-6 py-8 md:py-12 space-y-10 md:space-y-16">
         {isLoading && (
           <div className="space-y-4">
             <div className="h-7 w-48 skeleton" />
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-5">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="animate-fade-in animate-delay-{i}">
                   <div className="aspect-[2/3] rounded-md skeleton" />
@@ -378,17 +379,17 @@ function Index() {
         {!isLoading && (q || language || genre) ? (
           <>
             <div className="animate-fade-in-up">
-              <h2 className="text-2xl font-semibold mb-2 tracking-tight">
+              <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
                 Search results
                 {q && <span className="text-muted-foreground font-normal"> for "{q}"</span>}
                 {language && <span className="text-muted-foreground font-normal"> in {language === 'ar' ? 'العربية' : language === 'fr' ? 'Français' : 'English'}</span>}
                 {genre && <span className="text-muted-foreground font-normal"> — {genre}</span>}
               </h2>
-              <p className="text-sm text-muted-foreground mb-6">{filtered.length} book{filtered.length !== 1 ? "s" : ""} found</p>
+              <p className="text-sm text-muted-foreground mb-5 md:mb-6">{filtered.length} book{filtered.length !== 1 ? "s" : ""} found</p>
               <Rail books={filtered} />
             </div>
             {filtered.length === 0 && (
-              <div className="text-center py-20">
+              <div className="text-center py-16 md:py-20">
                 <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center mb-4">
                   <Search className="h-6 w-6 text-muted-foreground" />
                 </div>
@@ -404,12 +405,12 @@ function Index() {
           <>
             {topFavorited.length > 0 && (
               <div className="animate-fade-in-up">
-                <div className="flex items-center gap-2 mb-5">
+                <div className="flex items-center gap-2 mb-4 md:mb-5">
                   <Heart className="h-5 w-5 text-destructive fill-destructive animate-pulse" />
-                  <h2 className="text-xl font-semibold tracking-tight">Most Favorited</h2>
+                  <h2 className="text-lg md:text-xl font-semibold tracking-tight">Most Favorited</h2>
                   <span className="text-xs text-muted-foreground ml-auto">{totalFavorites} total favorites</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 mb-10">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-5 mb-8 md:mb-10">
                   {topFavorited.map((b) => (
                     <BookCard key={b.id} book={b} showStats />
                   ))}
@@ -419,11 +420,11 @@ function Index() {
 
             {rails.map(([cat, list], idx) => (
               <div key={cat} className="animate-fade-in-up" style={{ animationDelay: `${idx * 0.08}s` }}>
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-xl font-semibold tracking-tight">{cat}</h2>
+                <div className="flex items-center justify-between mb-4 md:mb-5">
+                  <h2 className="text-lg md:text-xl font-semibold tracking-tight">{cat}</h2>
                   <span className="text-xs text-muted-foreground">{list.length} book{list.length !== 1 ? "s" : ""}</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-5">
                   {list.map((b) => (
                     <BookCard key={b.id} book={b} />
                   ))}
@@ -432,8 +433,8 @@ function Index() {
             ))}
             {filtered.length > 0 && (
               <div className="animate-fade-in-up">
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-xl font-semibold tracking-tight">All books</h2>
+                <div className="flex items-center justify-between mb-4 md:mb-5">
+                  <h2 className="text-lg md:text-xl font-semibold tracking-tight">All books</h2>
                   <span className="text-xs text-muted-foreground">{filtered.length} book{filtered.length !== 1 ? "s" : ""}</span>
                 </div>
                 <Rail books={filtered} />
@@ -449,7 +450,7 @@ function Index() {
 function Rail({ books }: { books: Book[] }) {
   if (!books.length) return null;
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-5">
       {books.map((b) => (
         <BookCard key={b.id} book={b} />
       ))}
@@ -485,7 +486,8 @@ function BookCard({ book, showStats }: { book: Book & { count?: number }; showSt
             </div>
           )}
 
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-start justify-end p-3 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none">
+          {/* Always visible on mobile (no hover on touch); hidden until hover from sm+ */}
+          <div className="absolute inset-0 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 flex items-start justify-end p-3 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none">
             <div className="pointer-events-auto" onClick={(e) => e.stopPropagation()}>
               <FavoriteButton bookId={book.id} />
             </div>
