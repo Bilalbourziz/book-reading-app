@@ -157,31 +157,36 @@ function Index() {
     <div>
       {featured && !hasFilters && (
         <section className="relative overflow-hidden min-h-[calc(100dvh-80px)] flex items-center">
-          {/* Background layer — static */}
+          {/* Background layer — NO blur, uses low opacity + gradient overlay instead */}
           <div className="absolute inset-0">
             {featured.cover_url && (
               <img
                 src={featured.cover_url}
                 alt=""
                 aria-hidden
-                className="w-full h-full object-cover scale-110 blur-2xl opacity-40"
+                className="w-full h-full object-cover scale-105 opacity-[0.12]"
               />
             )}
             <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
           </div>
 
-          {/* Foreground content — stacks on mobile, side-by-side from md+ */}
+          {/* Foreground content */}
           <div className="relative w-full max-w-7xl mx-auto px-6 py-10 md:py-16 grid grid-cols-1 md:grid-cols-[1fr_260px] gap-6 md:gap-10 items-center">
-            {/* Cover shows first on mobile (visual hook), second on desktop */}
+            {/* Cover */}
             <div className="order-1 md:order-2 animate-fade-in-scale w-full max-w-[160px] sm:max-w-[190px] md:max-w-[220px] mx-auto" key={featured.id + "-cover"}>
               <div className="relative aspect-[2/3] group">
-                <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl blur-2xl transition-all duration-700 group-hover:blur-3xl group-hover:from-primary/30 group-hover:to-accent/30" />
+                {/* Glow: animate opacity only, blur is static and never transitions */}
+                <div
+                  className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl blur-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-500 ease-out"
+                  style={{ willChange: "opacity" }}
+                />
                 {featured.cover_url ? (
                   <img
                     src={featured.cover_url}
                     alt={featured.title}
-                    className="w-full h-full rounded-lg shadow-cinematic ring-1 ring-white/10 relative object-cover transition-transform duration-500 group-hover:-translate-y-1 group-hover:rotate-1"
+                    className="w-full h-full rounded-lg shadow-cinematic ring-1 ring-white/10 relative object-cover transition-transform duration-500 ease-out group-hover:-translate-y-1 group-hover:rotate-1"
+                    style={{ willChange: "transform" }}
                   />
                 ) : (
                   <div className="w-full h-full rounded-lg bg-secondary ring-1 ring-white/10 flex items-center justify-center relative">
@@ -237,14 +242,14 @@ function Index() {
             </div>
           </div>
 
-          {/* Scroll cue — desktop only, avoids overlapping longer mobile text blocks */}
+          {/* Scroll cue — static icon, no continuous animation */}
           <button
             onClick={() => searchSectionRef.current?.scrollIntoView({ behavior: "smooth" })}
             className="hidden sm:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-1 text-muted-foreground/70 hover:text-foreground transition-colors cursor-pointer"
             aria-label="Scroll down"
           >
             <span className="text-[11px] uppercase tracking-[0.2em]">SCROLL DOWN</span>
-            <ChevronDown className="h-4 w-4 animate-bounce" />
+            <ChevronDown className="h-4 w-4" />
           </button>
         </section>
       )}
@@ -364,7 +369,7 @@ function Index() {
             <div className="h-7 w-48 skeleton" />
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-5">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="animate-fade-in animate-delay-{i}">
+                <div key={i}>
                   <div className="aspect-[2/3] rounded-md skeleton" />
                   <div className="mt-3 space-y-2">
                     <div className="h-4 w-3/4 skeleton" />
@@ -462,13 +467,14 @@ function BookCard({ book, showStats }: { book: Book & { count?: number }; showSt
   return (
     <div className="group">
       <Link to="/book/$id" params={{ id: book.id }}>
-        <div className="aspect-[2/3] rounded-lg overflow-hidden bg-secondary ring-1 ring-border/60 group-hover:ring-primary/60 transition-all duration-500 shadow-cinematic relative card-hover">
+        <div className="aspect-[2/3] rounded-lg overflow-hidden bg-secondary ring-1 ring-border/60 group-hover:ring-primary/60 transition-colors duration-300 shadow-cinematic relative">
           {book.cover_url ? (
             <img
               src={book.cover_url}
               alt={book.title}
               loading="lazy"
-              className="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              style={{ willChange: "transform" }}
             />
           ) : (
             <div className="w-full h-full grid place-items-center text-muted-foreground text-xs p-4 text-center">
@@ -486,8 +492,8 @@ function BookCard({ book, showStats }: { book: Book & { count?: number }; showSt
             </div>
           )}
 
-          {/* Always visible on mobile (no hover on touch); hidden until hover from sm+ */}
-          <div className="absolute inset-0 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 flex items-start justify-end p-3 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none">
+          {/* Favorite overlay — opacity transition only, no filter blur */}
+          <div className="absolute inset-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-start justify-end p-3 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none">
             <div className="pointer-events-auto" onClick={(e) => e.stopPropagation()}>
               <FavoriteButton bookId={book.id} />
             </div>
