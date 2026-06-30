@@ -492,8 +492,8 @@ function BookCard({ book, showStats }: { book: Book & { count?: number }; showSt
             </div>
           )}
 
-          {/* Favorite overlay — opacity transition only, no filter blur */}
-          <div className="absolute inset-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-start justify-end p-3 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none">
+          {/* Favorite overlay — always visible on mobile, visible on hover for desktop */}
+          <div className="absolute inset-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-start justify-end p-3 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none">
             <div className="pointer-events-auto" onClick={(e) => e.stopPropagation()}>
               <FavoriteButton bookId={book.id} />
             </div>
