@@ -14,6 +14,8 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReadIdRouteImport } from './routes/read.$id'
 import { Route as BookIdRouteImport } from './routes/book.$id'
+import { Route as SitemapXmlRouteImport } from './routes/sitemap-xml'
+import { Route as SitemapBooksRouteImport } from './routes/sitemap-books'
 import { Route as AuthenticatedSubmitBookRouteImport } from './routes/_authenticated/submit-book'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
@@ -83,6 +85,16 @@ const AuthenticatedAdminSubmissionsRoute =
     path: '/submissions',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const SitemapXmlRoute = SitemapXmlRouteImport.update({
+  id: '/sitemap-xml',
+  path: '/sitemap-xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapBooksRoute = SitemapBooksRouteImport.update({
+  id: '/sitemap-books',
+  path: '/sitemap-books',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminBooksRoute = AuthenticatedAdminBooksRouteImport.update({
   id: '/books',
   path: '/books',
@@ -98,6 +110,8 @@ export interface FileRoutesByFullPath {
   '/submit-book': typeof AuthenticatedSubmitBookRoute
   '/book/$id': typeof BookIdRoute
   '/read/$id': typeof ReadIdRoute
+  '/sitemap-xml': typeof SitemapXmlRoute
+  '/sitemap-books': typeof SitemapBooksRoute
   '/admin/books': typeof AuthenticatedAdminBooksRoute
   '/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -111,6 +125,8 @@ export interface FileRoutesByTo {
   '/submit-book': typeof AuthenticatedSubmitBookRoute
   '/book/$id': typeof BookIdRoute
   '/read/$id': typeof ReadIdRoute
+  '/sitemap-xml': typeof SitemapXmlRoute
+  '/sitemap-books': typeof SitemapBooksRoute
   '/admin/books': typeof AuthenticatedAdminBooksRoute
   '/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -127,6 +143,8 @@ export interface FileRoutesById {
   '/_authenticated/submit-book': typeof AuthenticatedSubmitBookRoute
   '/book/$id': typeof BookIdRoute
   '/read/$id': typeof ReadIdRoute
+  '/sitemap-xml': typeof SitemapXmlRoute
+  '/sitemap-books': typeof SitemapBooksRoute
   '/_authenticated/admin/books': typeof AuthenticatedAdminBooksRoute
   '/_authenticated/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -143,6 +161,8 @@ export interface FileRouteTypes {
     | '/submit-book'
     | '/book/$id'
     | '/read/$id'
+    | '/sitemap-xml'
+    | '/sitemap-books'
     | '/admin/books'
     | '/admin/submissions'
     | '/admin/users'
@@ -156,6 +176,8 @@ export interface FileRouteTypes {
     | '/submit-book'
     | '/book/$id'
     | '/read/$id'
+    | '/sitemap-xml'
+    | '/sitemap-books'
     | '/admin/books'
     | '/admin/submissions'
     | '/admin/users'
@@ -171,6 +193,8 @@ export interface FileRouteTypes {
     | '/_authenticated/submit-book'
     | '/book/$id'
     | '/read/$id'
+    | '/sitemap-xml'
+    | '/sitemap-books'
     | '/_authenticated/admin/books'
     | '/_authenticated/admin/submissions'
     | '/_authenticated/admin/users'
@@ -183,6 +207,8 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BookIdRoute: typeof BookIdRoute
   ReadIdRoute: typeof ReadIdRoute
+  SitemapXmlRoute: typeof SitemapXmlRoute
+  SitemapBooksRoute: typeof SitemapBooksRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -278,6 +304,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBooksRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/sitemap-xml': {
+      id: '/sitemap-xml'
+      path: '/sitemap-xml'
+      fullPath: '/sitemap-xml'
+      preLoaderRoute: typeof SitemapXmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-books': {
+      id: '/sitemap-books'
+      path: '/sitemap-books'
+      fullPath: '/sitemap-books'
+      preLoaderRoute: typeof SitemapBooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -321,6 +361,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BookIdRoute: BookIdRoute,
   ReadIdRoute: ReadIdRoute,
+  SitemapXmlRoute: SitemapXmlRoute,
+  SitemapBooksRoute: SitemapBooksRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
